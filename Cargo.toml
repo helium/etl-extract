@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [[bin]]
-name = "etl-exporter"
+name = "etl-extract"
 path = "src/main.rs"
 doc = false
 
