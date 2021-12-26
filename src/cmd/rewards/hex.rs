@@ -8,17 +8,14 @@ use structopt::StructOpt;
 #[derive(Debug, StructOpt)]
 /// Generates JSON output with rewards for each res8 hex that has hotspots.  
 pub struct Cmd {
-    // The day to run the report over (in UTC)
+    // The day to run the report over (in UTC). The start time is at the
+    // beginning midnight of the given date (00:00:00).
     date: NaiveDate,
 
     /// The number of days to include in the timespan. Days can be positive or
     /// negative.
-    #[structopt(default_value = "1")]
+    #[structopt(default_value = "-1")]
     days: i64,
-
-    /// Include the average of the reward amounts in rewards
-    #[structopt(long)]
-    avg: bool,
 }
 
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
@@ -59,9 +56,10 @@ impl Cmd {
             .fetch(pool);
         let mut serializer = serde_json::Serializer::pretty(std::io::stdout());
         let mut entries = serializer.serialize_seq(None)?;
+        let abs_days = self.days.abs();
         while let Some(mut reward) = rows.try_next().await? {
-            if self.avg {
-                reward.avg = Some(reward.amount / self.days.abs() as f64)
+            if abs_days > 1 {
+                reward.avg = Some(reward.amount / abs_days as f64)
             }
             entries.serialize_element(&reward)?;
         }
