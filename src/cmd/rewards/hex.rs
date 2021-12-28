@@ -38,7 +38,7 @@ const HEXREWARDS_QUERY: &str = r#"
     )
     select 
         g.location_hex as hex, 
-        (sum(s.amount) / 100000000)::float as amount, 
+        coalesce(sum(s.amount) / 100000000, 0)::float as amount, 
         count(g.address) as count
     from gateway_inventory g 
         left join stats s on g.address = s.gateway
