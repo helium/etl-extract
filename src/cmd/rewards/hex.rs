@@ -31,20 +31,20 @@ pub struct HexReward {
 const HEXREWARDS_QUERY: &str = r#"
     with stats as (
         select r.gateway, sum(r.amount) as amount
-        from gateway_inventory g
-        left join rewards r on g.address = r.gateway
+        from rewards r
         where r.gateway is not null 
-            and g.location_hex is not null
-            and r.block between $1 and $2
+            and r.block between 1146418 and 1154783
         group by r.gateway
     )
     select 
         g.location_hex as hex, 
         (sum(s.amount) / 100000000)::float as amount, 
-        count(s.gateway) as count
-    from stats s
-        left join gateway_inventory g on s.gateway = g.address
-    group by g.location_hex;    
+        count(g.address) as count
+    from gateway_inventory g 
+        left join stats s on g.address = s.gateway
+    where 
+        g.location_hex is not null 
+    group by g.location_hex;   
 "#;
 
 impl Cmd {
