@@ -33,6 +33,9 @@ async fn main() -> Result {
 }
 
 async fn run(cli: Cli) -> Result {
+    if let Some(ref path) = cli.opts.env {
+        dotenv::from_path(path)?;
+    }
     let pool = PgPool::connect(&dotenv::var("DATABASE_URL")?).await?;
 
     match cli.cmd {
