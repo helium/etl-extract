@@ -33,7 +33,7 @@ const HEXREWARDS_QUERY: &str = r#"
         select r.gateway, sum(r.amount) as amount
         from rewards r
         where r.gateway is not null 
-            and r.block between 1146418 and 1154783
+            and r.block between $1 and $2
         group by r.gateway
     )
     select 
