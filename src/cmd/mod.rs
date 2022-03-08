@@ -1,4 +1,5 @@
 pub mod blocks;
+pub mod hotspots;
 pub mod rewards;
 
 use crate::Result;

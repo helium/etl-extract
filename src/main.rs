@@ -1,5 +1,5 @@
 use etl_exporter::{
-    cmd::{blocks, rewards, Opts},
+    cmd::{blocks, hotspots, rewards, Opts},
     Result,
 };
 use sqlx::postgres::PgPool;
@@ -19,6 +19,7 @@ pub struct Cli {
 pub enum Cmd {
     Blocks(blocks::Cmd),
     Rewards(rewards::Cmd),
+    Hotspots(hotspots::Cmd),
 }
 
 #[tokio::main]
@@ -41,5 +42,6 @@ async fn run(cli: Cli) -> Result {
     match cli.cmd {
         Cmd::Blocks(cmd) => cmd.run(&pool, cli.opts).await,
         Cmd::Rewards(cmd) => cmd.run(&pool, cli.opts).await,
+        Cmd::Hotspots(cmd) => cmd.run(&pool, cli.opts).await,
     }
 }
