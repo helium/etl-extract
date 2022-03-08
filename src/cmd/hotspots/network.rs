@@ -1,5 +1,4 @@
-use crate::{cmd::Opts, BlockSpan, Result};
-use chrono::NaiveDate;
+use crate::{cmd::Opts, Result};
 use futures::TryStreamExt;
 use h3ron::{H3Cell, ToCoordinate};
 use serde::{ser::SerializeSeq, Serializer};
@@ -9,16 +8,7 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 /// Generates JSON output with all hotspots
-pub struct Cmd {
-    /// The day to run the report over (in UTC). The start time is at the
-    /// beginning midnight of the given date (00:00:00).
-    date: NaiveDate,
-
-    /// The number of days to include in the timespan. Days can be positive or
-    /// negative.
-    #[structopt(default_value = "-1")]
-    days: i64,
-}
+pub struct Cmd {}
 
 #[derive(sqlx::Type, Debug, serde::Serialize, serde::Deserialize)]
 #[sqlx(type_name = "gateway_status_online", rename_all = "lowercase")]
@@ -77,11 +67,7 @@ const HOTSPOTS_QUERY: &str = r#"
 
 impl Cmd {
     pub async fn run(&self, pool: &PgPool, _opts: Opts) -> Result {
-        let blockspan = BlockSpan::from_date(pool, self.date, self.days).await?;
-        let mut rows = sqlx::query_as::<_, Hotspot>(HOTSPOTS_QUERY)
-            .bind(blockspan.low)
-            .bind(blockspan.high)
-            .fetch(pool);
+        let mut rows = sqlx::query_as::<_, Hotspot>(HOTSPOTS_QUERY).fetch(pool);
         let mut serializer = serde_json::Serializer::pretty(std::io::stdout());
         let mut entries = serializer.serialize_seq(None)?;
         while let Some(mut hotspot) = rows.try_next().await? {
