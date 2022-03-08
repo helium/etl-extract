@@ -47,11 +47,7 @@ jobs:
         env:
           NAME: ${{ steps.name_release.outputs.RELEASE }}
         run: |
-          mkdir $NAME
-          mv target/release/etl-extract $NAME/
-          cp README.md $NAME/
-          cp LICENSE $NAME/
-          tar -zcvf $NAME.tar.gz $NAME/
+          tar -zcvf $NAME.tar.gz -C target/release etl-extract
           sha256sum -b --tag $NAME.tar.gz > $NAME.checksum
 
       - name: Push Release
