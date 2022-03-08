@@ -7,8 +7,8 @@ use structopt::StructOpt;
 #[derive(Debug, StructOpt)]
 /// Generates JSON output with rewards for each res8 hex that has hotspots.  
 pub struct Cmd {
-    // The day to run the report over (in UTC). The start time is at the
-    // beginning midnight of the given date (00:00:00).
+    /// The day to run the report over (in UTC). The start time is at the
+    /// beginning midnight of the given date (00:00:00).
     date: NaiveDate,
 
     /// The number of days to include in the timespan. Days can be positive or
