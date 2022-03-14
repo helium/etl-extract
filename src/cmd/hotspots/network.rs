@@ -44,6 +44,8 @@ pub struct Hotspot {
     #[serde(skip_serializing_if = "Option::is_none")]
     short_city: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    short_state: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     short_country: Option<String>,
 }
 
