@@ -77,8 +77,12 @@ impl Cmd {
             .bind("consensus_percent")
             .fetch_one(pool)
             .await?;
+        let (poc_challengers_percent,): (f64,) = sqlx::query_as(GET_VAR)
+            .bind("poc_challengers_percent")
+            .fetch_one(pool)
+            .await?;
         let hotspot_avg_rewards = (rewards.total / self.days.abs() as f64)
-            * (1.0 - consensus_percent - securities_percent)
+            * (1.0 - consensus_percent - securities_percent - poc_challengers_percent)
             / hotspots_online as f64;
 
         let summary = json!({
