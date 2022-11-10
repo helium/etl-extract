@@ -15,6 +15,12 @@ impl TimeSpan {
     pub fn new<S: ToDateTimeUtc>(start: S, days: i64) -> Self {
         let start = start.to_datetime();
         let end = start + Duration::days(days);
+        Self::for_date_range(start, end)
+    }
+
+    pub fn for_date_range<S: ToDateTimeUtc, E: ToDateTimeUtc>(start: S, end: E) -> Self {
+        let start = start.to_datetime();
+        let end = end.to_datetime();
         Self {
             low: std::cmp::min(start, end),
             high: std::cmp::max(start, end),

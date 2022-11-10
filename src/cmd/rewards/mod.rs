@@ -2,6 +2,7 @@ use crate::{cmd::Opts, Result};
 use sqlx::PgPool;
 use structopt::StructOpt;
 
+mod account;
 mod hex;
 mod network;
 
@@ -9,6 +10,7 @@ mod network;
 pub enum Cmd {
     Hex(hex::Cmd),
     Network(network::Cmd),
+    Account(account::Cmd),
 }
 
 impl Cmd {
@@ -16,6 +18,7 @@ impl Cmd {
         match self {
             Self::Hex(cmd) => cmd.run(pool, opts).await,
             Self::Network(cmd) => cmd.run(pool, opts).await,
+            Self::Account(cmd) => cmd.run(pool, opts).await,
         }
     }
 }

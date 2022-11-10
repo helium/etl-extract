@@ -24,6 +24,15 @@ impl BlockSpan {
         Self::for_timespan(pool, &timespan).await
     }
 
+    pub async fn for_date_range<S: ToDateTimeUtc, E: ToDateTimeUtc>(
+        pool: &PgPool,
+        start: S,
+        end: E,
+    ) -> Result<Self> {
+        let timespan = TimeSpan::for_date_range(start, end);
+        Self::for_timespan(pool, &timespan).await
+    }
+
     pub async fn for_timespan(pool: &PgPool, timespan: &TimeSpan) -> Result<Self> {
         let span: BlockSpan = sqlx::query_as(BLOCKSPAN_QUERY)
             .bind(timespan.high)

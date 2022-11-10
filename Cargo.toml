@@ -19,3 +19,4 @@ futures = "0"
 tokio = { version = "1", features = ["full"] }
 sqlx = {version = "0", features = [ "runtime-tokio-rustls", "postgres", "chrono" ] }
 h3ron = "0"
+csv = "1"
