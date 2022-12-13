@@ -1,59 +1,14 @@
-use crate::{cmd::Opts, BlockSpan, Error, Result};
-use anyhow::anyhow;
+use crate::{
+    cmd::{Format, Opts},
+    BlockSpan, Result,
+};
 use chrono::{DateTime, NaiveDate, Utc};
-use futures::stream::BoxStream;
-use futures::TryStreamExt;
-use serde::{ser::SerializeSeq, Serializer};
 use sqlx::postgres::PgPool;
 use structopt::StructOpt;
 
-#[derive(Debug)]
-pub enum Format {
-    Json,
-    Csv,
-}
-
-impl Format {
-    async fn output<'a, W: std::io::Write>(
-        &self,
-        output: W,
-        mut rows: BoxStream<'a, std::result::Result<ValidatorReward, sqlx::Error>>,
-    ) -> Result {
-        match self {
-            Self::Json => {
-                let mut serializer = serde_json::Serializer::pretty(output);
-                let mut entries = serializer.serialize_seq(None)?;
-                while let Some(reward) = rows.try_next().await? {
-                    entries.serialize_element(&reward)?;
-                }
-                entries.end()?;
-            }
-            Self::Csv => {
-                let mut serializer = csv::Writer::from_writer(output);
-                while let Some(reward) = rows.try_next().await? {
-                    serializer.serialize(&reward)?;
-                }
-                serializer.flush()?;
-            }
-        }
-        Ok(())
-    }
-}
-
-impl std::str::FromStr for Format {
-    type Err = Error;
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        match s.to_ascii_lowercase().as_str() {
-            "csv" => Ok(Self::Csv),
-            "json" => Ok(Self::Json),
-            _ => Err(anyhow!("invalid format {s}")),
-        }
-    }
-}
-
 #[derive(Debug, StructOpt)]
-/// Generates CSV output with rewards for all reward entries for validators
-/// owned by a given wallet.  
+/// Generates CSV  or JSON output with HNT rewards for all reward entries for
+/// validators and emitted securities owned by a given wallet.  
 pub struct Cmd {
     /// The wallet address to look up validators for
     account: String,
@@ -66,7 +21,7 @@ pub struct Cmd {
     /// at the beginning midnight of the given date (00:00:00).
     end: NaiveDate,
 
-    #[structopt(long, default_value = "json")]
+    #[structopt(long, default_value)]
     format: Format,
 }
 
