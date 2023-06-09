@@ -1,4 +1,4 @@
-use chrono::{Date, DateTime, Duration, NaiveDate, Utc};
+use chrono::{DateTime, Duration, NaiveDate, Utc};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -9,7 +9,7 @@ pub struct TimeSpan {
 
 impl TimeSpan {
     pub fn today() -> Self {
-        Self::new(Utc::today(), 1)
+        Self::new(Utc::now().date_naive(), 1)
     }
 
     pub fn new<S: ToDateTimeUtc>(start: S, days: i64) -> Self {
@@ -34,18 +34,12 @@ pub trait ToDateTimeUtc {
 
 impl ToDateTimeUtc for NaiveDate {
     fn to_datetime(self) -> DateTime<Utc> {
-        DateTime::from_utc(self.and_hms(0, 0, 0), Utc)
+        DateTime::from_utc(self.and_hms_opt(0, 0, 0).unwrap(), Utc)
     }
 }
 
 impl ToDateTimeUtc for DateTime<Utc> {
     fn to_datetime(self) -> DateTime<Utc> {
         self
-    }
-}
-
-impl ToDateTimeUtc for Date<Utc> {
-    fn to_datetime(self) -> DateTime<Utc> {
-        self.and_hms(0, 0, 0)
     }
 }

@@ -1,6 +1,7 @@
-use crate::{timespan::ToDateTimeUtc, Result, TimeSpan};
+use crate::{timespan::ToDateTimeUtc, TimeSpan};
 use serde::Serialize;
 use sqlx::PgPool;
+use std::result::Result as StdResult;
 
 #[derive(Debug, sqlx::FromRow, Serialize)]
 pub struct BlockSpan {
@@ -19,7 +20,11 @@ const BLOCKSPAN_QUERY: &str = r#"
 "#;
 
 impl BlockSpan {
-    pub async fn from_date<S: ToDateTimeUtc>(pool: &PgPool, date: S, days: i64) -> Result<Self> {
+    pub async fn from_date<S: ToDateTimeUtc>(
+        pool: &PgPool,
+        date: S,
+        days: i64,
+    ) -> StdResult<Self, sqlx::Error> {
         let timespan = TimeSpan::new(date, days);
         Self::for_timespan(pool, &timespan).await
     }
@@ -28,12 +33,12 @@ impl BlockSpan {
         pool: &PgPool,
         start: S,
         end: E,
-    ) -> Result<Self> {
+    ) -> StdResult<Self, sqlx::Error> {
         let timespan = TimeSpan::for_date_range(start, end);
         Self::for_timespan(pool, &timespan).await
     }
 
-    pub async fn for_timespan(pool: &PgPool, timespan: &TimeSpan) -> Result<Self> {
+    pub async fn for_timespan(pool: &PgPool, timespan: &TimeSpan) -> StdResult<Self, sqlx::Error> {
         let span: BlockSpan = sqlx::query_as(BLOCKSPAN_QUERY)
             .bind(timespan.high)
             .bind(timespan.low)

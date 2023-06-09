@@ -74,7 +74,7 @@ impl Cmd {
         let mut entries = serializer.serialize_seq(None)?;
         while let Some(mut hotspot) = rows.try_next().await? {
             if let Some(location) = &hotspot.location {
-                let (lng, lat) = H3Cell::from_str(location)?.to_coordinate().x_y();
+                let (lng, lat) = H3Cell::from_str(location)?.to_coordinate()?.x_y();
                 hotspot.lng = Some(lng);
                 hotspot.lat = Some(lat);
             }

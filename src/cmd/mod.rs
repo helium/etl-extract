@@ -7,6 +7,7 @@ pub mod blocks;
 // pub mod flow;
 pub mod hotspots;
 pub mod rewards;
+pub mod supply;
 
 /// Common options for most commands
 #[derive(Debug, StructOpt)]
@@ -76,6 +77,6 @@ impl ToString for Format {
         match self {
             Self::Csv => "csv".to_string(),
             Self::Json => "json".to_string(),
-        }   
+        }
     }
 }
