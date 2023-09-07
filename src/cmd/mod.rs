@@ -5,6 +5,7 @@ use structopt::StructOpt;
 
 pub mod blocks;
 // pub mod flow;
+pub mod balance;
 pub mod hotspots;
 pub mod rewards;
 pub mod supply;
