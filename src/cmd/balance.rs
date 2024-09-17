@@ -30,6 +30,9 @@ pub struct Balance {
     block: i64,
     dc: i64,
     hnt: f64,
+    mobile: f64,
+    iot: f64,
+    hst: f64,
     staked_hnt: f64,
 }
 
@@ -37,6 +40,9 @@ const BALANCE_QUERY: &str = r#"
     select 
         $2 as block, 
         greatest(0, max(balance))::float8 / 100000000 as hnt,
+        greatest(0, max(mobile_balance))::float8 / 100000000 as mobile,
+        greatest(0, max(security_balance))::float8 / 100000000 as hst,
+        greatest(0, max(iot_balance))::float8 / 100000000 as iot,
         greatest(0, max(dc_balance)) as dc,
         greatest(0, max(staked_balance))::float8 / 100000000 as staked_hnt
     from accounts
